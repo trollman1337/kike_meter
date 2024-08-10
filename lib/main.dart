@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kike Search engine',
+      title: 'Kike Search Engine',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -22,26 +25,58 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       themeMode: ThemeMode.system,
-      home: SearchScreen(),
+      home: const SearchScreen(),
     );
   }
 }
 
 class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
+
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
   final _nameController = TextEditingController();
+  final _keyController = TextEditingController();
   String _result = '';
   bool _loading = false;
+  bool _isAccepted = false;
+  String _accessKey = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAccessKey();
+  }
+
+  // Load the saved access key from local storage
+  Future<void> _loadAccessKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _accessKey = prefs.getString('access_key') ?? '';
+      _keyController.text = _accessKey;
+      _isAccepted = _accessKey.isNotEmpty; // Check if key exists
+    });
+  }
+
+  // Save the access key to local storage
+  Future<void> _saveAccessKey(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_key', key);
+  }
 
   Future<http.Response> fetchWikipediaContent(String url) async {
     try {
       final proxyUrl = 'http://localhost:4000/fetch?url=${Uri.encodeComponent(url)}';
-      print('Fetching URL: $proxyUrl');
-      final response = await http.get(Uri.parse(proxyUrl));
+      final response = await http.get(
+        Uri.parse(proxyUrl),
+        headers: {
+          'x-access-key': _accessKey, // Use the saved access key
+        },
+      );
+
       print('Response Status: ${response.statusCode}');
       print('Response Headers: ${response.headers}');
 
@@ -116,13 +151,50 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kike Search Engine'),
+        title: const Text('Kike Search Engine'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Access Key Input
+            TextField(
+              controller: _keyController,
+              decoration: InputDecoration(
+                labelText: 'Enter API Key',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              ),
+              onChanged: (value) {
+                _accessKey = value;
+              },
+            ),
+            SizedBox(height: 16),
+            // Access Key Checkbox
+            Row(
+              children: [
+                Checkbox(
+                  value: _isAccepted,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _isAccepted = value ?? false;
+                      if (_isAccepted && _accessKey.isNotEmpty) {
+                        _saveAccessKey(_accessKey);
+                      } else {
+                        _accessKey = '';
+                        _saveAccessKey(_accessKey);
+                      }
+                    });
+                  },
+                ),
+                Text('I accept and save the access key'),
+              ],
+            ),
+            SizedBox(height: 16),
+            // Search TextField
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: TextField(
@@ -137,6 +209,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             SizedBox(height: 16),
+            // Search Button
             Center(
               child: ElevatedButton(
                 onPressed: _search,
@@ -152,6 +225,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             SizedBox(height: 16),
+            // Loading Indicator
             if (_loading)
               Center(
                 child: SizedBox(
