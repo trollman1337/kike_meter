@@ -1,77 +1,116 @@
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as parser;
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// Function to fetch Wikipedia content
-Future<http.Response> fetchWikipediaContent(String url) async {
-  final response = await http.get(Uri.parse(url));
-  if (response.statusCode == 200) {
-    return response;
-  } else {
-    throw Exception('Failed to load content');
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Scrollable Page Example',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
   }
 }
 
-// Function to extract relevant sections from the Wikipedia page
-Map<String, String> extractRelevantSections(String htmlContent) {
-  final document = parser.parse(htmlContent);
-  final sections = <String, String>{};
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-  // Define possible relevant headings
-  final relevantHeadings = [
-    'Early life',
-    'Personal life',
-    'Life and career',
-    'Early life and background',
-    'Biography',
-    'Background',
-    'Career',
-    // Add more headings as needed
-  ];
+class _MyHomePageState extends State<MyHomePage> {
+  final TextEditingController _apiKeyController = TextEditingController();
+  final TextEditingController _serverController = TextEditingController();
+  bool _darkMode = false;
+  bool _saveDetails = false;
 
-  final headingElements = document.querySelectorAll('h2, h3, h4');
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedPreferences();
+  }
 
-  for (var headingElement in headingElements) {
-    final headingText = headingElement.text.trim();
+  void _loadSavedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _apiKeyController.text = prefs.getString('api_key') ?? '';
+      _serverController.text = prefs.getString('server') ?? '';
+      _darkMode = prefs.getBool('dark_mode') ?? false;
+      _saveDetails = prefs.getBool('save_details') ?? false;
+    });
+  }
 
-    if (relevantHeadings.any((heading) => headingText.contains(heading))) {
-      final buffer = StringBuffer();
-      var nextElement = headingElement.nextElementSibling;
-
-      while (nextElement != null && !nextElement.localName!.startsWith('h')) {
-        if (nextElement.localName == 'p' || nextElement.localName == 'ul' || nextElement.localName == 'div') {
-          buffer.writeln(nextElement.text.trim());
-        }
-        nextElement = nextElement.nextElementSibling;
-      }
-
-      sections[headingText] = buffer.toString().trim();
+  void _savePreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (_saveDetails) {
+      prefs.setString('api_key', _apiKeyController.text);
+      prefs.setString('server', _serverController.text);
     }
+    prefs.setBool('dark_mode', _darkMode);
+    prefs.setBool('save_details', _saveDetails);
   }
 
-  return sections;
-}
-
-// Function to search specifically for the substring "jew" in sections
-bool searchInSections(String sectionsText) {
-  if (sectionsText.isEmpty) {
-    return false;
-  }
-
-  return sectionsText.toLowerCase().contains('jew');
-}
-
-void main() async {
-  final url = 'https://en.wikipedia.org/wiki/Some_Article'; // Replace with the actual URL
-  try {
-    final response = await fetchWikipediaContent(url);
-    final sections = extractRelevantSections(response.body);
-
-    for (var entry in sections.entries) {
-      if (searchInSections(entry.value)) {
-        print('Found "jew" in section: ${entry.key}');
-      }
-    }
-  } catch (e) {
-    print('An error occurred: $e');
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Scrollable Page'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    TextField(
+                      controller: _apiKeyController,
+                      decoration: InputDecoration(labelText: 'API Key'),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: _serverController,
+                      decoration: InputDecoration(labelText: 'Server Hostname:Port'),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _saveDetails,
+                          onChanged: (value) {
+                            setState(() {
+                              _saveDetails = value ?? false;
+                            });
+                            _savePreferences();
+                          },
+                        ),
+                        Text('Save API Key and Server Details'),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        _savePreferences();
+                        final serverInfo = 'API Key: ${_apiKeyController.text}\n'
+                            'Server: ${_serverController.text}';
+                        print('Saved Server Info:\n$serverInfo');
+                      },
+                      child: Text('Submit'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

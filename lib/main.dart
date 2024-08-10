@@ -4,12 +4,10 @@ import 'package:html/parser.dart' as parser;
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,66 +23,80 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       themeMode: ThemeMode.system,
-      home: const SearchScreen(),
+      home: SearchScreen(),
     );
   }
 }
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
-
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
   final _nameController = TextEditingController();
-  final _keyController = TextEditingController();
+  final _ipController = TextEditingController();
+  final _portController = TextEditingController();
+  final _apiKeyController = TextEditingController();
   String _result = '';
   bool _loading = false;
-  bool _isAccepted = false;
-  String _accessKey = '';
+  bool _saveDetails = false; // Single checkbox for both settings
+  String? _serverHost;
+  String? _serverPort;
+  String? _accessKey;
 
   @override
   void initState() {
     super.initState();
-    _loadAccessKey();
+    _loadServerInfo();
   }
 
-  // Load the saved access key from local storage
-  Future<void> _loadAccessKey() async {
+  // Load saved server info and API key from SharedPreferences
+  Future<void> _loadServerInfo() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _accessKey = prefs.getString('access_key') ?? '';
-      _keyController.text = _accessKey;
-      _isAccepted = _accessKey.isNotEmpty; // Check if key exists
+      _serverHost = prefs.getString('serverHost');
+      _serverPort = prefs.getString('serverPort');
+      _accessKey = prefs.getString('accessKey');
+      _ipController.text = _serverHost ?? '';
+      _portController.text = _serverPort ?? '';
+      _apiKeyController.text = _accessKey ?? '';
+      _saveDetails = _serverHost != null && _serverPort != null && _accessKey != null;
     });
   }
 
-  // Save the access key to local storage
-  Future<void> _saveAccessKey(String key) async {
+  // Save server info and API key to SharedPreferences
+  Future<void> _saveSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('access_key', key);
+    if (_saveDetails) {
+      await prefs.setString('serverHost', _serverHost ?? '');
+      await prefs.setString('serverPort', _serverPort ?? '');
+      await prefs.setString('accessKey', _accessKey ?? '');
+    } else {
+      await prefs.remove('serverHost');
+      await prefs.remove('serverPort');
+      await prefs.remove('accessKey');
+    }
   }
 
+  // Fetch Wikipedia content from the server
   Future<http.Response> fetchWikipediaContent(String url) async {
     try {
-      final proxyUrl = 'http://localhost:4000/fetch?url=${Uri.encodeComponent(url)}';
+      final proxyUrl = 'http://${_serverHost}:${_serverPort}/fetch?url=${Uri.encodeComponent(url)}';
       final response = await http.get(
         Uri.parse(proxyUrl),
         headers: {
-          'x-access-key': _accessKey, // Use the saved access key
+          'x-access-key': _accessKey ?? '', // Use the saved access key
         },
       );
 
       print('Response Status: ${response.statusCode}');
       print('Response Headers: ${response.headers}');
 
-      // Safely handle the body length to prevent RangeError
       final bodySnippet = response.body.length <= 100
           ? response.body
           : response.body.substring(0, 100);
-      print('Response Body: $bodySnippet'); // Print first 100 characters or the entire body if it's shorter
+      print('Response Body: $bodySnippet');
 
       if (response.statusCode == 200) {
         return response;
@@ -116,14 +128,11 @@ class _SearchScreenState extends State<SearchScreen> {
       final response = await fetchWikipediaContent(url);
       final htmlContent = response.body;
 
-      // Parse the HTML and get the body text
       final document = parser.parse(htmlContent);
       final bodyText = document.body?.text ?? '';
 
-      // Split text into sentences
       final sentences = bodyText.split(RegExp(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s'));
 
-      // Find the first sentence containing the substring "jew"
       final firstMatchingSentence = sentences.firstWhere(
         (sentence) => sentence.toLowerCase().contains('jew'),
         orElse: () => '',
@@ -145,107 +154,149 @@ class _SearchScreenState extends State<SearchScreen> {
         _loading = false;
       });
     }
+
+    await _saveSettings();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kike Search Engine'),
+        title: Text('Kike Search Engine'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Access Key Input
-            TextField(
-              controller: _keyController,
-              decoration: InputDecoration(
-                labelText: 'Enter API Key',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              ),
-              onChanged: (value) {
-                _accessKey = value;
-              },
-            ),
-            SizedBox(height: 16),
-            // Access Key Checkbox
-            Row(
-              children: [
-                Checkbox(
-                  value: _isAccepted,
-                  onChanged: (bool? value) {
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Server IP TextField
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _ipController,
+                  decoration: InputDecoration(
+                    labelText: 'Server IP',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  ),
+                  onChanged: (value) {
                     setState(() {
-                      _isAccepted = value ?? false;
-                      if (_isAccepted && _accessKey.isNotEmpty) {
-                        _saveAccessKey(_accessKey);
-                      } else {
-                        _accessKey = '';
-                        _saveAccessKey(_accessKey);
-                      }
+                      _serverHost = value;
                     });
                   },
                 ),
-                Text('I accept and save the access key'),
-              ],
-            ),
-            SizedBox(height: 16),
-            // Search TextField
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Search Wikipedia for Person',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+              ),
+              SizedBox(height: 16),
+              // Server Port TextField
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _portController,
+                  decoration: InputDecoration(
+                    labelText: 'Server Port',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  onChanged: (value) {
+                    setState(() {
+                      _serverPort = value;
+                    });
+                  },
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            // Search Button
-            Center(
-              child: ElevatedButton(
-                onPressed: _search,
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+              SizedBox(height: 16),
+              // Access Key TextField
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _apiKeyController,
+                  decoration: InputDecoration(
+                    labelText: 'Access Key',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  onChanged: (value) {
+                    setState(() {
+                      _accessKey = value;
+                    });
+                  },
                 ),
-                child: Text('Search'),
               ),
-            ),
-            SizedBox(height: 16),
-            // Loading Indicator
-            if (_loading)
+              SizedBox(height: 16),
+              // Save Details Checkbox
+              Row(
+                children: [
+                  Checkbox(
+                    value: _saveDetails,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _saveDetails = value ?? false;
+                      });
+                    },
+                  ),
+                  Text('Save Server Info and Access Key'),
+                ],
+              ),
+              SizedBox(height: 16),
+              // Search TextField
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Search Wikipedia for Person',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              // Search Button
               Center(
-                child: SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4,
+                child: ElevatedButton(
+                  onPressed: _search,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   ),
+                  child: Text('Search'),
                 ),
-              )
-            else if (_result.isNotEmpty)
-              Expanded(
-                child: SingleChildScrollView(
+              ),
+              SizedBox(height: 16),
+              // Loading Indicator
+              if (_loading)
+                Center(
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4,
+                    ),
+                  ),
+                )
+              else if (_result.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
                   child: SelectableText(
                     _result,
-                    style: TextStyle(fontSize: 16.0),
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
