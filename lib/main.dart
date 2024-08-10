@@ -10,19 +10,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Substring Finder',
+      title: 'Kike Search engine',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        brightness: Brightness.light, // Automatically adapts based on system settings
-        // To automatically handle dark mode, omit brightness or set it to null.
+        brightness: Brightness.light,
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      themeMode: ThemeMode.system, // Use system theme mode
+      themeMode: ThemeMode.system,
       home: SearchScreen(),
     );
   }
@@ -38,17 +37,31 @@ class _SearchScreenState extends State<SearchScreen> {
   String _result = '';
   bool _loading = false;
 
-  // Fetch Wikipedia content
   Future<http.Response> fetchWikipediaContent(String url) async {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      return response;
-    } else {
-      throw Exception('Failed to load content');
+    try {
+      final proxyUrl = 'http://localhost:4000/fetch?url=${Uri.encodeComponent(url)}';
+      print('Fetching URL: $proxyUrl');
+      final response = await http.get(Uri.parse(proxyUrl));
+      print('Response Status: ${response.statusCode}');
+      print('Response Headers: ${response.headers}');
+
+      // Safely handle the body length to prevent RangeError
+      final bodySnippet = response.body.length <= 100
+          ? response.body
+          : response.body.substring(0, 100);
+      print('Response Body: $bodySnippet'); // Print first 100 characters or the entire body if it's shorter
+
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception('Failed to load content');
+      }
+    } catch (e) {
+      print('Error fetching content: $e');
+      rethrow;
     }
   }
 
-  // Find the first sentence containing the substring "jew"
   void _search() async {
     final name = _nameController.text.trim();
 
@@ -90,7 +103,7 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (e) {
       setState(() {
-        _result = 'Error fetching data.';
+        _result = 'Error fetching data: $e';
       });
     } finally {
       setState(() {
@@ -110,7 +123,6 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search TextField
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: TextField(
@@ -125,22 +137,21 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             SizedBox(height: 16),
-            // Search Button
             Center(
               child: ElevatedButton(
                 onPressed: _search,
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // Smaller padding
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 ),
                 child: Text('Search'),
               ),
             ),
             SizedBox(height: 16),
-            // Loading Indicator
             if (_loading)
               Center(
                 child: SizedBox(
@@ -154,7 +165,10 @@ class _SearchScreenState extends State<SearchScreen> {
             else if (_result.isNotEmpty)
               Expanded(
                 child: SingleChildScrollView(
-                  child: Text(_result),
+                  child: SelectableText(
+                    _result,
+                    style: TextStyle(fontSize: 16.0),
+                  ),
                 ),
               ),
           ],
