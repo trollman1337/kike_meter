@@ -15,16 +15,21 @@ dependencies:
   html: ^0.15.4
   sqflite: ^2.3.3+1
   path: ^1.9.0
-  shared_preferences: ^2.3.1
+  shared_preferences: ^2.3.1 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/jew.jpg"
 
 flutter:
   uses-material-design: true
 
-  # Assets
   assets:
-    - assets/jew.png
+    - "assets/jew.jpg"
