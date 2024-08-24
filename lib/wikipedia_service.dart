@@ -3,11 +3,7 @@ import 'package:http/http.dart' as http;
 
 Future<String> fetchWikipediaContent(String person) async {
   final response = await http.get(Uri.parse(
-    'https://en.wikipedia.org/w/api.php?' +
-    'action=parse&' +
-    'page=${Uri.encodeComponent(person)}&' +
-    'prop=text&' +
-    'format=json',
+    'https://en.wikipedia.org/w/api.php?action=parse&page=${Uri.encodeComponent(person)}&prop=text&format=json',
   ));
 
   if (response.statusCode == 200) {

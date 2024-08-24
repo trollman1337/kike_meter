@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scrollable Page'),
+        title: const Text('Scrollable Page'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -72,14 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: <Widget>[
                     TextField(
                       controller: _apiKeyController,
-                      decoration: InputDecoration(labelText: 'API Key'),
+                      decoration: const InputDecoration(labelText: 'API Key'),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: _serverController,
-                      decoration: InputDecoration(labelText: 'Server Hostname:Port'),
+                      decoration: const InputDecoration(labelText: 'Server Hostname:Port'),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       children: [
                         Checkbox(
@@ -91,10 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             _savePreferences();
                           },
                         ),
-                        Text('Save API Key and Server Details'),
+                        const Text('Save API Key and Server Details'),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         _savePreferences();
@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             'Server: ${_serverController.text}';
                         print('Saved Server Info:\n$serverInfo');
                       },
-                      child: Text('Submit'),
+                      child: const Text('Submit'),
                     ),
                   ],
                 ),

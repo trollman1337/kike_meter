@@ -162,7 +162,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kike Search Engine'),
+        title: const Text('Kike Search Engine'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -170,9 +170,9 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Server IP TextField
+              // Server IP/hostname TextField
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextField(
                   controller: _ipController,
                   decoration: InputDecoration(
@@ -180,7 +180,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -189,10 +189,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Server Port TextField
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextField(
                   controller: _portController,
                   decoration: InputDecoration(
@@ -200,7 +200,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -209,10 +209,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Access Key TextField
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextField(
                   controller: _apiKeyController,
                   decoration: InputDecoration(
@@ -220,7 +220,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -229,7 +229,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Save Details Checkbox
               Row(
                 children: [
@@ -241,13 +241,13 @@ class _SearchScreenState extends State<SearchScreen> {
                       });
                     },
                   ),
-                  Text('Save Server Info and Access Key'),
+                  const Text('Save Server Info and Access Key'),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Search TextField
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextField(
                   controller: _nameController,
                   decoration: InputDecoration(
@@ -255,11 +255,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Search Button
               Center(
                 child: ElevatedButton(
@@ -270,15 +270,15 @@ class _SearchScreenState extends State<SearchScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   ),
-                  child: Text('Search'),
+                  child: const Text('Search'),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Loading Indicator
               if (_loading)
-                Center(
+                const Center(
                   child: SizedBox(
                     width: 40,
                     height: 40,
@@ -292,7 +292,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   padding: const EdgeInsets.only(top: 16.0),
                   child: SelectableText(
                     _result,
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
             ],
