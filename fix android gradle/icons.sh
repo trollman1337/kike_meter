@@ -1,39 +1,25 @@
 #!/bin/bash
 
-# Define the path to your build.gradle file
-BUILD_GRADLE_PATH="android/app/build.gradle"
+# Variables
+KOTLIN_VERSION="1.8.0"
+PROJECT_ROOT="$(pwd)"
 
-# Define the minSdkVersion you want to set
-MIN_SDK_VERSION=21
+# Update Kotlin version in build.gradle (Project Level)
+echo "Updating Kotlin version in build.gradle (Project Level)..."
+sed -i "" "s/ext.kotlin_version = '.*'/ext.kotlin_version = '$KOTLIN_VERSION'/g" "$PROJECT_ROOT/build.gradle"
 
-# Check if minSdkVersion is already set in build.gradle
-if grep -q "minSdkVersion" "$BUILD_GRADLE_PATH"; then
-  echo "minSdkVersion already set in build.gradle"
-else
-  echo "minSdkVersion not found in build.gradle. Adding it..."
-  sed -i '' "/defaultConfig {/a\\
-      minSdkVersion $MIN_SDK_VERSION
-  " $BUILD_GRADLE_PATH
-  echo "minSdkVersion set to $MIN_SDK_VERSION in build.gradle"
-fi
+# Update Kotlin version in build.gradle (App Level)
+echo "Updating Kotlin version in build.gradle (App Level)..."
+sed -i "" "s/id 'org.jetbrains.kotlin.android' version '.*'/id 'org.jetbrains.kotlin.android' version '$KOTLIN_VERSION'/g" "$PROJECT_ROOT/app/build.gradle"
 
-# Optional: Update local.properties with minSdkVersion
-LOCAL_PROPERTIES_PATH="android/local.properties"
-if grep -q "flutter.minSdkVersion" "$LOCAL_PROPERTIES_PATH"; then
-  echo "flutter.minSdkVersion already set in local.properties"
-else
-  echo "flutter.minSdkVersion not found in local.properties. Adding it..."
-  echo "flutter.minSdkVersion=$MIN_SDK_VERSION" >> $LOCAL_PROPERTIES_PATH
-  echo "flutter.minSdkVersion set to $MIN_SDK_VERSION in local.properties"
-fi
+# Clean and rebuild the project
+echo "Cleaning and rebuilding the project..."
+./gradlew clean
+./gradlew build
 
-# Run flutter_launcher_icons to generate the icons
-echo "Generating launcher icons..."
-flutter pub run flutter_launcher_icons:main
+# Optional: Invalidate caches/restart (if using Android Studio)
+# Uncomment the following line if using Android Studio and want to automate cache invalidation
+# echo "Invalidating caches and restarting Android Studio..."
+# idea --invalidate-caches
 
-# Check if the launcher icons were successfully generated
-if [ $? -eq 0 ]; then
-  echo "Launcher icons generated successfully!"
-else
-  echo "Failed to generate launcher icons."
-fi
+echo "Kotlin version update and project rebuild completed."
