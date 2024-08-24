@@ -46,7 +46,7 @@
 		</data>
 		<key>Frameworks/App.framework/App</key>
 		<data>
-		a31QAF0FicxdL1sulusFbVtt5kE=
+		MOOmHRy9iUkQeyunERgq6+QSUgI=
 		</data>
 		<key>Frameworks/App.framework/Info.plist</key>
 		<data>
@@ -90,7 +90,7 @@
 		</data>
 		<key>Frameworks/Flutter.framework/Flutter</key>
 		<data>
-		Ta9VZUcL+YQb1Ou0ETddVWlHXNE=
+		g1uW+jLiAFQTMbtYXrqqpNd8GJ4=
 		</data>
 		<key>Frameworks/Flutter.framework/Headers/Flutter.h</key>
 		<data>
@@ -186,7 +186,7 @@
 		</data>
 		<key>Frameworks/shared_preferences_foundation.framework/shared_preferences_foundation</key>
 		<data>
-		VC4zSEPMxk6IPHLTWW3B8ItOfbc=
+		vMH1RgcNN/pvVGcVjZLqRKoKsxM=
 		</data>
 		<key>Frameworks/shared_preferences_foundation.framework/shared_preferences_foundation_privacy.bundle/Info.plist</key>
 		<data>
@@ -206,7 +206,7 @@
 		</data>
 		<key>Frameworks/sqflite.framework/sqflite</key>
 		<data>
-		4MDhkf+0fj6m3RM/uXrvc6Zp840=
+		Kxa6MzIzsXA+8yhEH+UvMyj285o=
 		</data>
 		<key>Frameworks/sqflite.framework/sqflite_darwin_privacy.bundle/Info.plist</key>
 		<data>
@@ -305,7 +305,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			J6VNNps6iSKViL81QWM2hHesAR4OTCBJI9hG9MR3P98=
+			XisATnbEM7WIkgSsFa7R9v/m2t9FEgO73aLkj07PGls=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/Info.plist</key>
@@ -382,7 +382,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			lJhHDjD9rw9wU+Czc6AC+SGegLq6E3DgqYuVZ7Zw1xE=
+			rgf1rr5saRh2zWY2yMj7mj9244wYvH7KEp6X0aQMjus=
 			</data>
 		</dict>
 		<key>Frameworks/Flutter.framework/Headers/Flutter.h</key>
@@ -550,7 +550,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			uw/IPxLfy/bkrvR+UoNt7pqlgr9JqcHcSsVxgUIbwEw=
+			32loo1A6GoaTK9LCvCnA1c1o7bGZWln7F/H6pOrBJcM=
 			</data>
 		</dict>
 		<key>Frameworks/shared_preferences_foundation.framework/shared_preferences_foundation_privacy.bundle/Info.plist</key>
@@ -585,7 +585,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			/ayFnh9CE/D9HN5bakN8v3U1jVMfZqRnhiPZ+DYOKGI=
+			DrNi7cCcUbFk4lAvwdzM8CRq6Vl0N7AA+CL+VkZMOlE=
 			</data>
 		</dict>
 		<key>Frameworks/sqflite.framework/sqflite_darwin_privacy.bundle/Info.plist</key>
