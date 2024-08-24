@@ -40,7 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final _apiKeyController = TextEditingController();
   String _result = '';
   bool _loading = false;
-  bool _saveDetails = false; // Single checkbox for both settings
+  bool _saveDetails = false; // Single checkbox for both settings trollface
   String? _serverHost;
   String? _serverPort;
   String? _accessKey;
@@ -79,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  // Fetch Wikipedia content from the server
+  // Fetch Wikipedia content from the server to search for the jude
   Future<http.Response> fetchWikipediaContent(String url) async {
     try {
       final proxyUrl = 'http://${_serverHost}:${_serverPort}/fetch?url=${Uri.encodeComponent(url)}';
