@@ -1,6 +1,7 @@
 # kike_meter
 
-A search engine with a nodejs proxy server
+As the title suggests, Its based on the early life section to find the sneaky jews
+
 ## Summary
 
-This project is a an multiplatform application with a nodejs backend applica
+The project backend is flexible and can be used to find anything other than the sneaky jews
