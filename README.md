@@ -25,14 +25,6 @@ flutter build apk --release
 
 This generates a release APK in build/app/outputs/flutter-apk/app-release.apk.
 
-(Optional) Build the AAB:
-
-bash
-```
-    flutter build appbundle --release
-
-    This generates an Android App Bundle in build/app/outputs/bundle/release/app.aab.
-```
 
 2. Build for iOS
 
@@ -40,8 +32,7 @@ bash
 
     bash
 
-```open ios/Runner.xcworkspace
-```
+``` open ios/Runner.xcworkspace ```
 
 Build the iOS App:
 
