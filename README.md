@@ -12,24 +12,27 @@ Prerequisites
     Navigate to Your Flutter Project:
 
     bash
-
+```
 cd path/to/your/flutter_project
+```
 
 Build the APK:
 
 bash
-
+```
 flutter build apk --release
+```
 
 This generates a release APK in build/app/outputs/flutter-apk/app-release.apk.
 
 (Optional) Build the AAB:
 
 bash
-
+```
     flutter build appbundle --release
 
     This generates an Android App Bundle in build/app/outputs/bundle/release/app.aab.
+```
 
 2. Build for iOS
 
@@ -37,7 +40,8 @@ bash
 
     bash
 
-open ios/Runner.xcworkspace
+```open ios/Runner.xcworkspace
+```
 
 Build the iOS App:
 
@@ -58,8 +62,8 @@ bash
 
     bash
 
-    flutter build web
-
+    ```flutter build web```
+   
     This generates the web build in the build/web directory.
 
 Installing Release Builds
