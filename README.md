@@ -55,20 +55,9 @@ bash
 
     ```flutter build web```
    
-    This generates the web build in the build/web directory.
 
 Installing Release Builds
 For Android
-
-    Transfer the APK:
-        Copy the app-release.apk to your Android device.
-
-    Install the APK:
-        Open the APK file on your device to install it.
-
-    Alternatively, use ADB to install:
-
-    bash
 
     adb install build/app/outputs/flutter-apk/app-release.apk
 
@@ -81,9 +70,10 @@ For Android
 
 ## For Web
 
-    Deploy the Web Build:
+        Deploy the Web Build:
         Upload the contents of the build/web directory to your web server.
 
+    
 ## Additional Notes
 
     Ensure you have set up all necessary provisioning profiles and signing certificates for iOS builds.
