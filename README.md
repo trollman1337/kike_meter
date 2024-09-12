@@ -7,7 +7,7 @@ Prerequisites
     Flutter SDK: Ensure you have Flutter installed. Download it from flutter.dev.
     Build Tools: Ensure you have the necessary build tools installed for your platform.
 
-1. Build for Android
+## Build for Android
 
     Navigate to Your Flutter Project:
 
@@ -26,7 +26,7 @@ flutter build apk --release
 This generates a release APK in build/app/outputs/flutter-apk/app-release.apk.
 
 
-2. Build for iOS
+## Build for iOS
 
     Open the iOS Project:
 
@@ -47,7 +47,7 @@ bash
 
     This generates the iOS build in the ios/build/ios/iphoneos/Runner.app directory.
 
-3. Build for Web
+## Build for Web
 
     Build the Web App:
 
